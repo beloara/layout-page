@@ -1,0 +1,116 @@
+html {
+  box-sizing: border-box;
+  background: #fff;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+
+body {
+  margin: 0 auto;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: #8B8E8C;
+  background: #fff;
+
+}
+h1 {
+  text-align: center;
+}
+.hide {
+  display: none;
+}
+.table {
+  width: 700px;
+  border-collapse: collapse;
+  margin: 20px auto;
+}
+
+.header__col:first-child {
+  width: 37%;
+}
+.header__col:nth-child(2){
+  width: 20%;
+}
+.header__col:nth-child(3) {
+  width: 20%;
+}
+.header__col:last-child {
+  width: 23%;
+}
+.row__col,
+.header__col {
+  padding: 10px;
+
+  transition: background-color 0.5s ease-in-out;
+  font-weight: bold;
+}
+.row__col:not(:last-child),
+.header__col:not(:last-child) {
+  border-right: 5px solid #fff;
+}
+.row__col:not(:nth-child(2)),
+.header__col:not(:nth-child(2)) {
+  background-color: #F5F5F5;
+}
+.row__col:nth-child(2),
+.header__col:nth-child(2) {
+  background-color: #EDF8FF;
+}
+
+tbody .row:not(.row__compose){
+  cursor: pointer;
+}
+
+.row:not(:last-child), .header {
+  border-bottom: 5px solid #fff;
+}
+
+.table .increase {
+  background-color: #ECF7E7;
+}
+.table .decrease {
+  background-color: #FEE6E6;
+}
+
+.row {
+  z-index:10;
+}
+
+.row:hover .row__col{
+  background-color: #e3e3e3;  
+}
+
+.yesterday__percent {
+  text-align: right;
+}
+.yesterday {
+  display: flex;
+  justify-content: space-between;
+}
+
+.current-day,
+.day-of-week {
+  text-align: right;
+  padding-right: 20px;
+}
+
+.compose .row-title {
+  padding-left: 20px;
+}
+
+.row-chart td{
+  height: 300px;
+}
+
+.row-chart {
+  display: none;
+}
+.opened-chart {
+  display: table-row;
+}
