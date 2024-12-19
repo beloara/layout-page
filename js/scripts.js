@@ -1,7 +1,8 @@
 (function () {
-  let weekdays = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-  let indicatorsIncome = [
-
+  
+  const weekdays = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+  
+  const indicatorsIncome = [
     {
       id: 1,
       title: 'Выручка, руб',
@@ -75,6 +76,7 @@
       dayOfWeek: 32
     }
   ];
+
   let chartsData = [
     {
       id: 1,
@@ -116,17 +118,14 @@
       id: 10,
       data: [43934, 48656, 65165, 81827, 112143, 142383, 171533]
     },
-    ];
+  ];
 
-  let createNewElement = function (tag, classes, content) {
-    let element = document.createElement(tag);
-
+  const createNewElement = function (tag, classes, content) {
+    const element = document.createElement(tag);
     if (classes) {
       for (let classOfElement of classes) {
-
         element.classList.add(classOfElement);
       }
-
     }
     if (content) {
       element.textContent = content;
@@ -134,17 +133,15 @@
     return element;
   }
 
-  let createAppTitle = function (title) {
-    let appTitle = createNewElement('h1', '', title);
+  const createAppTitle = function (title) {
+    const appTitle = createNewElement('h1', '', title);
     return appTitle;
   };
 
-
-  let createTable = function () {
-
-    let table = createNewElement('table');
-    let tbody = createNewElement('tbody');
-    let headerTable = createThead(['Показатель', 'Текущий день', 'Вчера', 'Этот день недели']);
+  const createTable = function () {
+    const table = createNewElement('table');
+    const tbody = createNewElement('tbody');
+    const headerTable = createThead();
 
     table.append(headerTable);
     table.append(tbody);
@@ -152,9 +149,11 @@
 
     return table;
   }
-  let createThead = function (headers) {
-    let headerTable = createNewElement('thead');
-    let headerLine = createNewElement('tr');
+
+  let createThead = function () {
+    const headers = ['Показатель', 'Текущий день', 'Вчера', 'Этот день недели'];
+    const headerTable = createNewElement('thead');
+    const headerLine = createNewElement('tr');
 
     for (let i = 0; i < headers.length; i++) {
       let element = createNewElement('th', '', headers[i]);
@@ -167,12 +166,33 @@
   }
 
   let createItem = function (indicators, compose) {
-    let item = createNewElement('tr', ['table__row', 'row']);
+    const item = createNewElement('tr', ['table__row', 'row']);
 
-    let title = createNewElement('td', ['row__col', 'row-title'], indicators.title);
-    let currentDay = createNewElement('td', ['row__col', 'current-day'], indicators.currentDay);
-    let yesterday = createNewElement('td', ['row__col', 'yesterday'], indicators.yesterday);
-    let dayOfWeek = createNewElement('td', ['row__col', 'day-of-week'], indicators.dayOfWeek);
+    const title = createNewElement('td', ['row__col', 'row-title'], indicators.title);
+    const currentDay = createNewElement('td', ['row__col', 'current-day'], indicators.currentDay);
+    const dayOfWeek = createNewElement('td', ['row__col', 'day-of-week'], indicators.dayOfWeek);
+
+    const yesterday = createNewElement('td', ['row__col', 'yesterday']);
+    const yesterdayValue = createNewElement('span', ['yesterday__value'], indicators.yesterday);
+
+    const yesterdayPercentNum = Math.round(indicators.currentDay * 100 / indicators.yesterday - 100);
+
+    const yesterdayPercent = createNewElement('span', ['yesterday__percent'], yesterdayPercentNum + '%');
+
+    if (yesterdayPercentNum > 0) {
+      yesterday.classList.add('yesterday--green');
+    } else if (yesterdayPercentNum < 0) {
+      yesterday.classList.add('yesterday--red');
+    }
+
+    yesterday.append(yesterdayValue);
+    yesterday.append(yesterdayPercent);
+
+    if (indicators.currentDay > indicators.dayOfWeek) {
+      dayOfWeek.classList.add('yesterday--green');
+    } else if (indicators.currentDay < indicators.dayOfWeek) {
+      dayOfWeek.classList.add('yesterday--red');
+    }
 
     if (compose) {
       item.classList.add('compose', 'hide');
@@ -181,30 +201,27 @@
     item.append(currentDay);
     item.append(yesterday);
     item.append(dayOfWeek);
-    
+
     item.addEventListener('click', event => openCloseChart(event, item, indicators));
 
     return item;
   };
 
-  openCompose = function (item) {
-    
+  const openCompose = function (item) {
     let current = item.nextElementSibling;
-    
+
     if (!current) return;
     while (current.classList.contains('compose')) {
-      console.log(current.classList)
       current.classList.toggle('hide');
       current = current.nextElementSibling;
     }
-    
+
   };
 
-  let openCloseChart = function (e, item, properties) {
-    let chartExist = document.querySelector('#chart-' + properties.id);
-    
+  const openCloseChart = function (e, item, properties) {
+    const chartExist = document.querySelector('#chart-' + properties.id);
+
     if (chartExist) {
-      console.log(chartExist.classList);
       const rowChart = chartExist.closest('.row-chart');
       rowChart.classList.toggle('opened-chart');
       openCompose(rowChart);
@@ -212,8 +229,8 @@
     }
 
     openCompose(item);
-    let itemChart = createNewElement('tr', ['table__row', 'row', 'row-chart']);
-    let itemColChart = createNewElement('td');
+    const itemChart = createNewElement('tr', ['table__row', 'row', 'row-chart']);
+    const itemColChart = createNewElement('td');
 
     itemColChart.colSpan = 4;
     itemColChart.id = 'chart-' + properties.id;
@@ -221,61 +238,57 @@
     itemChart.classList.toggle('opened-chart');
 
     item.after(itemChart);
-    
+
     drawChart(properties);
-    
+
   };
 
 
-  let getWeekDays = function() {
-    let date = new Date();
-    let current = date.getDay();
-    let listDays = weekdays.slice(0, current + 1);
-    let listDays2 = weekdays.slice(current + 1, 7);
-    
-    let arrResult = listDays2.concat(listDays);
-    
-    return arrResult;
+  const getWeekDays = function () {
+    const date = new Date();
+    const current = date.getDay();
+    const listDays = weekdays.slice(0, current + 1);
+    const listDays2 = weekdays.slice(current + 1, 7);
+
+    const daysResult = listDays2.concat(listDays);
+
+    return daysResult;
   }
 
   let drawChart = function (properties) {
-    
+
     let points = [];
     for (let element of chartsData) {
       if (element.id === properties.id) {
-        console.log(element.data);
         points = element.data;
         break;
       }
     }
 
     let container = 'chart-' + properties.id;
-    
 
     Highcharts.chart(container, {
-
+      title: {
+        text: ''
+      },
       legend: {
         enabled: false
       },
-
       yAxis: {
         title: {
           text: properties.title
-        },        
+        },
       },
-
       xAxis: {
         title: {
           text: 'Дни недели'
         },
         categories: getWeekDays()
       },
-
-
       series: [{
-        data: points
+        data: points,
+        color: 'green'
       }],
-
       responsive: {
         rules: [{
           condition: {
@@ -294,14 +307,14 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    let container = document.getElementById('income-app');
+    const container = document.getElementById('income-app');
 
-    let appTitle = createAppTitle('Показатели прибыли');
+    const appTitle = createAppTitle('Показатели прибыли');
     container.append(appTitle);
 
-    let table = createTable();
+    const table = createTable();
 
-    let tbody = table.querySelector('tbody');
+    const tbody = table.querySelector('tbody');
 
     for (let i = 0; i < indicatorsIncome.length; i++) {
       let itemLine = createItem(indicatorsIncome[i]);
@@ -316,11 +329,6 @@
       }
     }
     container.append(table);
-
-    // console.log(Highcharts);
-
-
-
   });
 
 })();
